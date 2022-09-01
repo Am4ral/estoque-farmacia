@@ -98,9 +98,15 @@ void cadMedicamento(Medicamento* meds){
 
 void consultMedicamentos(){
     clear_terminal();
+    int code;
     cout << "+------------------------------+" << endl;
     cout << "|    Consultar Medicamento     |" << endl;
     cout << "+------------------------------+" << endl;
+    cout << "Digite o Codigo de Identificacao: ";
+    cin >> code;
+    //for(int i = 0; ; i++){
+        //compare if the written code is avaible in the code's variable Medicamentos
+    //}
 }
 
 void listStock(){
@@ -129,8 +135,9 @@ void listMedData(){
     cout << "+------------------------------+" << endl;
     cout << "|   Listar Dados do Estoque    |" << endl;
     cout << "+------------------------------+" << endl;
-    for(){
-    
+    for(int i = 0; medicamentos.free == true; i++){
+        cout << Medicamento;
+        //cout all the informations, check later if that's doable
     }
 }
 
