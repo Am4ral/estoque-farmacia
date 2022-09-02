@@ -45,68 +45,110 @@ void printMenu(){
     cout << "+------------------------------+" << endl;
 }
 
-void increaseArr(int *medSize, Medicamento *meds){
-    *medSize += 3;
-    Medicamento *temp =  new Medicamento[*medSize];
-    for(int i=0;i<((*medSize)-3);i++){
+int getArrSize(Medicamento* meds){
+    return sizeof(meds)/sizeof(Medicamento);
+}
+
+void increaseArr(Medicamento *meds){
+    int size = getArrSize(meds);
+    size += 3;
+
+    Medicamento *temp =  new Medicamento[size];
+    for(int i=0;i<((size)-3);i++){
         temp[i] = meds[i];
     }
     meds = &temp[0];
 }
 
 int getLastUnused(Medicamento* meds){
-    for(int i=0; i<meds.size(); i++){
+    int size = getArrSize(meds);
+    for(int i=0; i<size; i++){
         if(meds[i].free){
             return i;
         }
     }
     return -1;
-    //There's no error case cuz it's already being verified before cadMedicamento() is called
 }
 
-void cadMedicamento(Medicamento* meds){
+int cadMedicamento(Medicamento* meds){
     clear_terminal();
-    int index;
-    index = getLastUnused(meds);
-    if(index != -1){
-        cout << "+------------------------------+" << endl;
-        cout << "|    Cadastrar Medicamento     |" << endl;
-        cout << "+------------------------------+" << endl;
-        cout << "Nome do Medicamento: ";
-        cin >> meds[index].name;
-        cout << "Descricao do Medicamento: ";
-        cin >> meds[index].description;
-        cout << "Laboratorio de Origem: ";
-        cin >> meds[index].lab;
-        cout << "Codigo de Identificação: ";
-        cin >> meds[index].code;
-        cout << "Qtd. Disponivel: ";
-        cin >> meds[index].stock;
-        cout << "Preco da Unidade: ";
-        cin >> meds[index].price;
-        cout << "Situacao: ";
-        string stts;
-        cin >> stts;
-        if(stts == "Ativo"){
-            meds[index].status = true;
-        }
-        else{
-            meds[index].status = false;
+    int index = getLastUnused(meds);
+    int size = getArrSize(meds);
+    char code[4];
+
+
+    cout << "+------------------------------+" << endl;
+    cout << "|    Cadastrar Medicamento     |" << endl;
+    cout << "+------------------------------+" << endl;
+    
+    cout << "Codigo de Identificação: ";
+    cin >> code;
+
+    //Checking if it's already registered
+    for(int i=0; i<size;i++){
+        if(meds[i].code == code){
+            return 1;
         }
     }
+
+    //Checking if the struct have avaliabe space
+    //if not increase it
+    if(index == -1){
+        cout << "Estoque insuficiente..." << endl << "Aumentando!";
+        increaseArr(meds);
+        cout << "Aumento realizado!";
+    }
+    
+    cout << "Nome do Medicamento: ";
+    cin >> meds[index].name;
+    cout << "Descricao do Medicamento: ";
+    cin >> meds[index].description;
+    cout << "Laboratorio de Origem: ";
+    cin >> meds[index].lab;
+    cout << "Qtd. Disponivel: ";
+    cin >> meds[index].stock;
+    cout << "Preco da Unidade: ";
+    cin >> meds[index].price;
+    cout << "Situacao: ";
+    string stts;
+    cin >> stts;
+    if(stts == "Ativo"){
+        meds[index].status = true;
+    }
+        else{
+        meds[index].status = false;
+    }
+    return 0;
+
 }
 
-void consultMedicamentos(){
+void consultMedicamentos(Medicamento* meds){
     clear_terminal();
-    int code;
+    int size = getArrSize(meds);
+    char code[4];
     cout << "+------------------------------+" << endl;
     cout << "|    Consultar Medicamento     |" << endl;
     cout << "+------------------------------+" << endl;
-    cout << "Digite o Codigo de Identificacao: ";
+    cout << "Codigo de Identificacao: ";
     cin >> code;
-    //for(int i = 0; ; i++){
-        //compare if the written code is avaible in the code's variable Medicamentos
-    //}
+    for(int i=0; i<size; i++){
+        
+        if(meds[i].code == code){
+            cout << "Nome do Medicamento: " << meds[i].name;
+            cout << "Descricao do Medicamento: " << meds[i].description;
+            cout << "Laboratorio de Origem: " << meds[i].lab;
+            cout << "Codigo de Identificacao: " << meds[i].code;
+            cout << "Qtd. Disponivel: " << meds[i].stock;
+            cout << "Preco da Unidade: " << meds[i].price;
+            if(meds[i].status){
+                cout << "Situacao: Ativo";
+            }
+            else{
+                cout << "Situacao: Inativo";
+            }
+
+        }
+    }
 }
 
 void listStock(){
@@ -130,13 +172,14 @@ void sellMedicamento(){
     cout << "+------------------------------+" << endl;
 }
 
-void listMedData(){
+void listMedData(Medicamento meds){
     clear_terminal();
     cout << "+------------------------------+" << endl;
     cout << "|   Listar Dados do Estoque    |" << endl;
     cout << "+------------------------------+" << endl;
-    for(int i = 0; medicamentos.free == true; i++){
-        cout << Medicamento;
+
+    for(int i = 0; meds.free == true; i++){
+        cout << meds[i];
         //cout all the informations, check later if that's doable
     }
 }
@@ -152,8 +195,8 @@ void saveToFile(){
 
 int main(){
     bool menu = true;
-    int menuOpt, medSize=3, contMed=0;
-    Medicamento* meds = new Medicamento[medSize];
+    int menuOpt;
+    Medicamento* meds = new Medicamento[3];
 
 
     printMenu();
@@ -165,12 +208,12 @@ int main(){
         cin >> menuOpt;
         switch (menuOpt){
             case 1:
-                if(contMed > 3){
-                    increaseArr(&medSize, meds);
-                    contMed = 0;
+                if(cadMedicamento(meds) != 0){
+                    cout << "Erro! \n Medicamento ja cadastrado";
                 }
-                cadMedicamento(meds);
-                contMed++;
+                else{
+                    cout << "Cadastro Realizado com Sucesso";
+                }
                 break;
             case 2: 
                 consultMedicamentos();
