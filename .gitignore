@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+
+# Test file
+test.*
+
 # No extension files
 main
 test
