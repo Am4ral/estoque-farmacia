@@ -1,6 +1,10 @@
 # Prerequisites
 *.d
 
+# No extension files
+main
+test
+
 # Compiled Object files
 *.slo
 *.lo
