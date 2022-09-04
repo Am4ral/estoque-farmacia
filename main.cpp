@@ -1,11 +1,11 @@
 #include <iostream>
 #include <fstream>
+#include <cstring>
 
 
 using namespace std;
 
 struct Medicamento{
-    bool free = true;
     char name[100];
     char description[1000];
     char lab[50];
@@ -45,35 +45,31 @@ void printMenu(){
     cout << "+------------------------------+" << endl;
 }
 
-int getArrSize(Medicamento* meds){
-    return sizeof(meds)/sizeof(Medicamento);
+
+void mergeSort(Medicamento* meds, int nMeds){
+    //TODO implement
+
 }
 
-void increaseArr(Medicamento *meds){
-    int size = getArrSize(meds);
-    size += 3;
+void increaseArr(Medicamento* &meds, int& size, int& nMeds){
+    size += 2;
 
-    Medicamento *temp =  new Medicamento[size];
-    for(int i=0;i<((size)-3);i++){
-        temp[i] = meds[i];
-    }
-    meds = &temp[0];
+    // auto *biggerMeds = new Medicamento[size];
+    // for(int i=0; i<nMeds; i++){
+    //     biggerMeds[i] = meds[i];
+    // }
+    // delete[] meds;
+
+    // meds = biggerMeds;
+
+    meds = (Medicamento*)realloc(meds, sizeof(Medicamento)*size);
+
+
 }
 
-int getLastUnused(Medicamento* meds){
-    int size = getArrSize(meds);
-    for(int i=0; i<size; i++){
-        if(meds[i].free){
-            return i;
-        }
-    }
-    return -1;
-}
-
-int cadMedicamento(Medicamento* meds){
+int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     clear_terminal();
-    int index = getLastUnused(meds);
-    int size = getArrSize(meds);
+    int index = nMeds;
     char code[4];
 
 
@@ -85,24 +81,31 @@ int cadMedicamento(Medicamento* meds){
     cin >> code;
 
     //Checking if it's already registered
-    for(int i=0; i<size;i++){
-        if(meds[i].code == code){
+    for(int i=0; i<nMeds;i++){
+        if(strcmp(meds[i].code, code) == 0){
             return 1;
         }
     }
 
+
     //Checking if the struct have avaliabe space
     //if not increase it
-    if(index == -1){
-        cout << "Estoque insuficiente..." << endl << "Aumentando!";
-        increaseArr(meds);
-        cout << "Aumento realizado!";
+    if(nMeds == size){
+        cout << "Estoque insuficiente..." << endl << "Aumentando!" << endl;
+        increaseArr(meds, size, nMeds);
+        cout << "Aumento realizado!" << endl;
+        cout << "Novo tamanho de estoque: " << size << endl;
     }
+    nMeds++;
+    return 0;
     
     cout << "Nome do Medicamento: ";
     cin >> meds[index].name;
     cout << "Descricao do Medicamento: ";
     cin >> meds[index].description;
+
+    strcpy(meds[index].code, code);
+
     cout << "Laboratorio de Origem: ";
     cin >> meds[index].lab;
     cout << "Qtd. Disponivel: ";
@@ -115,47 +118,71 @@ int cadMedicamento(Medicamento* meds){
     if(stts == "Ativo"){
         meds[index].status = true;
     }
-        else{
+    else{
         meds[index].status = false;
     }
+
+    nMeds++;
+
+
+    //TODO sort the data by code
+
     return 0;
 
 }
 
-void consultMedicamentos(Medicamento* meds){
+void consultMedicamentos(Medicamento* meds, int size){
     clear_terminal();
-    int size = getArrSize(meds);
     char code[4];
     cout << "+------------------------------+" << endl;
     cout << "|    Consultar Medicamento     |" << endl;
     cout << "+------------------------------+" << endl;
+    
     cout << "Codigo de Identificacao: ";
     cin >> code;
+
     for(int i=0; i<size; i++){
         
         if(meds[i].code == code){
-            cout << "Nome do Medicamento: " << meds[i].name;
-            cout << "Descricao do Medicamento: " << meds[i].description;
-            cout << "Laboratorio de Origem: " << meds[i].lab;
-            cout << "Codigo de Identificacao: " << meds[i].code;
-            cout << "Qtd. Disponivel: " << meds[i].stock;
-            cout << "Preco da Unidade: " << meds[i].price;
+            cout << "Nome do Medicamento: " << meds[i].name << endl;
+            cout << "Descricao do Medicamento: " << meds[i].description << endl;
+            cout << "Laboratorio de Origem: " << meds[i].lab << endl;
+            cout << "Codigo de Identificacao: " << meds[i].code << endl;
+            cout << "Qtd. Disponivel: " << meds[i].stock << endl;
+            cout << "Preco da Unidade: " << meds[i].price << endl;
             if(meds[i].status){
-                cout << "Situacao: Ativo";
+                cout << "Situacao: Ativo" << endl;
             }
             else{
-                cout << "Situacao: Inativo";
+                cout << "Situacao: Inativo" << endl;
             }
 
         }
     }
 }
 
-void listStock(){
+void listStock(Medicamento* meds, int& nMeds){
     clear_terminal();
     cout << "+------------------------------+" << endl;
     cout << "|     Listar Medicamentos      |" << endl;
     cout << "+------------------------------+" << endl;
+    //TODO sort by name
+    for(int i=0;i<nMeds; i++){
+        cout << "+-----------------------------------------+" << endl;
+        cout << "Nome do Medicamento: " << meds[i].name << endl;
+        cout << "Descricao do Medicamento: " << meds[i].description<< endl;
+        cout << "Laboratorio de Origem: " << meds[i].lab << endl;
+        cout << "Codigo de Identificacao: " << meds[i].code << endl;
+        cout << "Qtd. Disponivel: " << meds[i].stock << endl;
+        cout << "Preco da Unidade: " << meds[i].price << endl;
+        if(meds[i].status){
+            cout << "Situacao: Ativo" << endl;
+        }
+        else{
+            cout << "Situacao: Inativo" << endl;
+        }
+        cout << "+-----------------------------------------+" << endl << endl;
+    }
 }
 
 void delMedicamento(){
@@ -165,30 +192,47 @@ void delMedicamento(){
     cout << "+------------------------------+" << endl;
 }
 
-void sellMedicamento(){
+int sellMedicamento(Medicamento* meds){
     clear_terminal();
+    char code[4];
+    int index;
     cout << "+------------------------------+" << endl;
     cout << "|        Efetuar Venda         |" << endl;
     cout << "+------------------------------+" << endl;
+
+    cout << "Codigo de Identificacao: ";
+    cin >> code;
+
+    //TODO find the med through binary srch
+
+    if(meds[index].status){
+        cout << "Descricao do Medicamento: " << meds[index].description << endl;
+        meds[index].stock--;
+        cout << meds[index].stock;
+        return 0;
+    }
+    else{
+        return 1;
+    }
 }
 
-void listMedData(Medicamento meds){
+void listMedData(Medicamento* meds){
     clear_terminal();
     cout << "+------------------------------+" << endl;
     cout << "|   Listar Dados do Estoque    |" << endl;
     cout << "+------------------------------+" << endl;
 
-    for(int i = 0; meds.free == true; i++){
-        cout << meds[i];
-        //cout all the informations, check later if that's doable
-    }
+    //TODO list stock data
 }
 
-void saveToFile(){
+void saveToFile(Medicamento* meds){
     clear_terminal();
+    ofstream file("saida");
     cout << "+------------------------------+" << endl;
     cout << "|      Salvar em Arquivo       |" << endl;
     cout << "+------------------------------+" << endl;
+
+    //file.write();
 }
 
 
@@ -196,42 +240,46 @@ void saveToFile(){
 int main(){
     bool menu = true;
     int menuOpt;
-    Medicamento* meds = new Medicamento[3];
+    int size = 2, nMeds = 0;
+    // auto* meds = new Medicamento[size];
+    Medicamento* meds = (Medicamento*) malloc(sizeof(Medicamento)*size);
 
 
-    printMenu();
-    cin >> menuOpt;
 
-
-    while(true){
+    while(menu){
         printMenu();
         cin >> menuOpt;
         switch (menuOpt){
             case 1:
-                if(cadMedicamento(meds) != 0){
-                    cout << "Erro! \n Medicamento ja cadastrado";
+                if(cadMedicamento(meds, size, nMeds) != 0){
+                    cout << "Erro! \nMedicamento ja cadastrado!" << endl;
                 }
                 else{
-                    cout << "Cadastro Realizado com Sucesso";
+                    cout << "Cadastro Realizado com Sucesso !" << endl;
                 }
                 break;
             case 2: 
-                consultMedicamentos();
+                consultMedicamentos(meds, size);
                 break;
             case 3: 
-                listStock();
+                listStock(meds, nMeds);
                 break;
             case 4: 
                 delMedicamento();
                 break;
             case 5: 
-                sellMedicamento();
+                if(sellMedicamento(meds) != 0){
+                    cout << "Medicamento indisponivel!" << endl;
+                }
+                else{
+                    cout << "Venda realizada com sucesso !" << endl;
+                }
                 break;
             case 6: 
-                listMedData();
+                listMedData(meds);
                 break;
             case 7: 
-                saveToFile();
+                saveToFile(meds);
                 break;
             case 8: 
                 cout << "Ecerrando programa!" << endl;
