@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <cctype>
 #include <cmath>
 
 
@@ -47,7 +48,7 @@ struct Medicamento{
 };
 
 //If your sort by alphabetical order it'll be reversed
-void merge(Medicamento* meds,  int init, int mid, int end){
+void merge(Medicamento* &meds, int init, int mid, int end, int mode){
     auto aux = new Medicamento[end-init+1];
 
     //Copying meds to an auxilar array;
@@ -61,15 +62,29 @@ void merge(Medicamento* meds,  int init, int mid, int end){
 
     //Interleaving the two arrays
     while((i <= mid) and (j <= end)){
-        if(aux[i].name[0] <= aux[j].name[0]){
-            meds[k] = aux[i];
-            i++;
+        if(mode == 1){
+            if(strcmp(aux[i].name, aux[j].name) < 0){
+                meds[k] = aux[i];
+                i++;
+            }
+            else{
+                meds[k] = aux[j];
+                j++;
+            }
+            k++;
         }
         else{
-            meds[k] = aux[j];
-            j++;
+            if(strcmp(aux[i].code, aux[j].code) < 0){
+                meds[k] = aux[i];
+                i++;
+            }
+            else{
+                meds[k] = aux[j];
+                j++;
+            }
+            k++;
         }
-        k++;
+        
     }
 
     //If the first half was not fully consumed, append it
@@ -87,7 +102,9 @@ void merge(Medicamento* meds,  int init, int mid, int end){
     }
 }
 
-void mergeSort(Medicamento* meds, int init, int end){
+//Mode: 0 for code 
+//Mode: 1 for lexico
+void mergeSort(Medicamento* &meds, int init, int end, int mode = 0){
 
     //Stop code, the arr is only one element in length
     if(init >= end){
@@ -95,16 +112,16 @@ void mergeSort(Medicamento* meds, int init, int end){
     }
     else{
         int mid = floor((init+end)/2);
-        mergeSort(meds, init, mid);
-        mergeSort(meds, mid+1, end);
+        mergeSort(meds, init, mid, mode);
+        mergeSort(meds, mid+1, end, mode);
 
-        merge(meds, init, mid, end);
+        merge(meds, init, mid, end, mode);
     }
 }
 
 int binSearch(Medicamento* meds, int nMeds){
     int index = 0;
-    return index;
+    return index;//Checking if mode is valid
 }
 
 //Resizing the Medicamento array to support more entries
@@ -113,16 +130,16 @@ void increaseArr(Medicamento* &meds, int& size, int& nMeds){
     //Test wise -- change back to 3 after debbug is done
     size += 2;
 
-    meds = (Medicamento*)realloc(meds, sizeof(Medicamento)*size);
 
-    //DO NOT DELETE BACKUP CODE
-    // auto *biggerMeds = new Medicamento[size];
-    // for(int i=0; i<nMeds; i++){
-    //     biggerMeds[i] = meds[i];
-    // }
-    // delete[] meds;
+    auto *biggerMeds = new Medicamento[size];
+    for(int i=0; i<nMeds; i++){
+        biggerMeds[i] = meds[i];
+    }
+    delete[] meds;
 
-    // meds = biggerMeds;
+    meds = biggerMeds;
+
+    //meds = (Medicamento*)realloc(meds, sizeof(Medicamento)*size);   
 }
 
 int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
@@ -186,14 +203,14 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
 
     nMeds++;
 
-    //TODO sort the data by code
+    //sorting by code, default mode
     mergeSort(meds, 0, nMeds);
 
     return 0;
 
 }
 
-void consultMedicamentos(Medicamento* meds, int size){
+void consultMedicamentos(Medicamento* &meds, int size){
     clear_terminal();
     char code[4];
     int index;
@@ -220,32 +237,34 @@ void consultMedicamentos(Medicamento* meds, int size){
     }
 }
 
-void listStock(Medicamento* meds, int size, int nMeds){
+void listStock(Medicamento* &meds, int size, int nMeds){
     clear_terminal();
     int index;
-    cout << "+------------------------------+" << endl;
-    cout << "|     Listar Medicamentos      |" << endl;
-    cout << "+------------------------------+" << endl;
+    cout << "+---------------------------------------+" << endl;
+    cout << "|     Listar Todos os Medicamentos      |" << endl;
+    cout << "+---------------------------------------+" << endl;
 
-    //TODO sort by name
-    mergeSort(meds, 0, nMeds);
-    index = binSearch(meds, size);
-
-    cout << "Nome do Medicamento: " << meds[index].name << endl;
-    cout << "Descricao do Medicamento: " << meds[index].description << endl;
-    cout << "Laboratorio de Origem: " << meds[index].lab << endl;
-    cout << "Codigo de Identificacao: " << meds[index].code << endl;
-    cout << "Qtd. Disponivel: " << meds[index].stock << endl;
-    cout << "Preco da Unidade: " << meds[index].price << endl;
-    if(meds[index].status){
-        cout << "Situacao: Ativo" << endl;
+    //sorting by name, mode = 1
+    mergeSort(meds, 0, nMeds, 1);
+    
+    for(index=0; index<nMeds; index++){
+        cout << "Nome do Medicamento: " << meds[index].name << endl;
+        cout << "Descricao do Medicamento: " << meds[index].description << endl;
+        cout << "Laboratorio de Origem: " << meds[index].lab << endl;
+        cout << "Codigo de Identificacao: " << meds[index].code << endl;
+        cout << "Qtd. Disponivel: " << meds[index].stock << endl;
+        cout << "Preco da Unidade: " << meds[index].price << endl;
+        if(meds[index].status){
+            cout << "Situacao: Ativo" << endl;
+        }
+        else{
+            cout << "Situacao: Inativo" << endl;
+        }
     }
-    else{
-        cout << "Situacao: Inativo" << endl;
-    }
+    
 }
 
-void delMedicamento(Medicamento* meds, int size, int nMeds){
+void delMedicamento(Medicamento* &meds, int size, int nMeds){
     clear_terminal();
     char code[4];
     int index;
@@ -260,13 +279,13 @@ void delMedicamento(Medicamento* meds, int size, int nMeds){
     index =  binSearch(meds, size);
 
     cout << "Descricao do Medicamento: " << meds[index].description << endl;
-    cout << "Confimar Exclusao ? ([y]es/[n]o) : ";
+    cout << "Confimar Exclusao ? ([S]im/[N]ao): ";
     cin >> conf;
 
     //switch style menu for the exclusion confirmation
     bool sent = true;
     while(sent){
-        switch (conf)
+        switch (tolower(conf))
         {
         case 'y':
             meds[index].status = false;
@@ -284,7 +303,7 @@ void delMedicamento(Medicamento* meds, int size, int nMeds){
     }
 }
 
-int sellMedicamento(Medicamento* meds, int size){
+int sellMedicamento(Medicamento* &meds, int size){
     clear_terminal();
     char code[4];
     int index;
