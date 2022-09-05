@@ -46,31 +46,60 @@ struct Medicamento{
     bool status;
 };
 
+//If your sort by alphabetical order it'll be reversed
+void merge(Medicamento* meds,  int init, int mid, int end){
+    auto aux = new Medicamento[end-init+1];
 
-void merge(){
-
-}
-
-void mergeSortCode(Medicamento* meds, int nMeds){
-    
-
-}
-
-void mergeSortAlpha(Medicamento* meds, int init, int end){
-    int mid;    
-
-    if(end == 1){
-        meds;
+    //Copying meds to an auxilar array;
+    for(int i = init; i <= end; i++){
+        aux[i] = meds[i];
     }
 
-    if(init < end){
-        mid = floor((init+end)/2);
-        mergeSortAlpha(meds, init, mid);
-        mergeSortAlpha(meds, mid+1, end);
+    int i = init; //Begin of the first half of the aux array
+    int j = mid + 1; //Begin of the second half of the aux array
+    int k = init; //K runs through the final array
+
+    //Interleaving the two arrays
+    while((i <= mid) and (j <= end)){
+        if(aux[i].name[0] <= aux[j].name[0]){
+            meds[k] = aux[i];
+            i++;
+        }
+        else{
+            meds[k] = aux[j];
+            j++;
+        }
+        k++;
+    }
+
+    //If the first half was not fully consumed, append it
+    while(i <= mid){
+        meds[k] = aux[i];
+        i++;
+        k++;
+    }
+
+    //If the second half was not fully consumed, append it
+    while(j <= end){
+        meds[k] = aux[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(Medicamento* meds, int init, int end){
+
+    //Stop code, the arr is only one element in length
+    if(init >= end){
+        return;
+    }
+    else{
+        int mid = floor((init+end)/2);
+        mergeSort(meds, init, mid);
+        mergeSort(meds, mid+1, end);
+
         merge(meds, init, mid, end);
     }
-
-
 }
 
 int binSearch(Medicamento* meds, int nMeds){
@@ -158,7 +187,7 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     nMeds++;
 
     //TODO sort the data by code
-    mergeSortCode(meds, nMeds);
+    mergeSort(meds, 0, nMeds);
 
     return 0;
 
@@ -199,7 +228,7 @@ void listStock(Medicamento* meds, int size, int nMeds){
     cout << "+------------------------------+" << endl;
 
     //TODO sort by name
-    mergeSortAlpha(1, meds, nMeds);
+    mergeSort(meds, 0, nMeds);
     index = binSearch(meds, size);
 
     cout << "Nome do Medicamento: " << meds[index].name << endl;
@@ -326,8 +355,8 @@ int main(){
     bool menu = true;
     int menuOpt;
     int size = 2, nMeds = 0;
-    // auto* meds = new Medicamento[size];
-    Medicamento* meds = (Medicamento*) malloc(sizeof(Medicamento)*size);
+    auto* meds = new Medicamento[size];
+    //Medicamento* meds = (Medicamento*) malloc(sizeof(Medicamento)*size);
 
     while(menu){
         printMenu();
