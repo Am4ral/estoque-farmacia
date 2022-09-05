@@ -3,6 +3,7 @@
 
 *.idea
 *.vscode
+*.txt
 
 # Test file
 test.*
