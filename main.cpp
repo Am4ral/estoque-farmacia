@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cctype>
 #include <cmath>
+#include <string.h>
 
 using namespace std;
 
@@ -168,7 +169,7 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     cout << "|    Cadastrar Medicamento     |" << endl;
     cout << "+------------------------------+" << endl;
     
-    cout << "Codigo de Identificação: ";
+    cout << "Codigo de Identificacao: ";
     cin >> code;
     cin.clear();
 
@@ -187,14 +188,31 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
         cout << "Aumento realizado!" << endl;
         cout << "Novo tamanho de estoque: " << size << endl;
     }
+<<<<<<< HEAD
+=======
+
+    //REMOVE AFTER TESTS
+    //-----------------------
+    //strcpy(meds[index].code, code);
+    //nMeds++;
+    //return 0;
+    //-----------------------
+>>>>>>> 4a8e8bc1687f2b757271f630fc34e783b029dfb0
     
     cin.ignore();
     cout << "Nome do Medicamento: ";
+<<<<<<< HEAD
     cin.getline(meds[index].name, 100);
     cin.clear();
     cout << "Descricao do Medicamento: ";
     cin.getline(meds[index].description, 1000);
     cin.clear();
+=======
+    cin >> meds[index].name;
+    cin.ignore();
+    cout << "Descricao do Medicamento: ";
+    cin.getline(meds[index].description, 1000);
+>>>>>>> 4a8e8bc1687f2b757271f630fc34e783b029dfb0
 
     strcpy(meds[index].code, code);
 
@@ -307,6 +325,7 @@ void delMedicamento(Medicamento* &meds, int nMeds){
             cout << "Confimar Exclusao ? ([S]im/[N]ao): ";
             cin >> conf;
 
+<<<<<<< HEAD
             //switch style menu for the exclusion confirmation
             bool sent = true;
             while(sent){
@@ -331,6 +350,27 @@ void delMedicamento(Medicamento* &meds, int nMeds){
         else{
             cout << "Medicamento ja esta inativo no estoque!" << endl;
         }
+=======
+        //switch style menu for the exclusion confirmation
+        bool sent = true;
+        
+        switch (tolower(conf))
+        {
+        case 's':
+            meds[index].status = false;
+            cout << "Exclusao realizada com sucesso!" << endl;
+            break;
+        case 'n':
+            cout << "Exclusao Cancelada!" << endl;
+            sent = false;
+            break;
+        
+        default:
+            cout << "Opcao Invalida!" << endl;
+            break;
+        }
+        
+>>>>>>> 4a8e8bc1687f2b757271f630fc34e783b029dfb0
     }
     else{
         cout << "ERR0! Medciamento Nao Encontrado!" << endl;
