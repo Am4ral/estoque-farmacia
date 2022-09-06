@@ -3,7 +3,6 @@
 #include <cstring>
 #include <cctype>
 #include <cmath>
-#include <string.h>
 
 using namespace std;
 
@@ -169,7 +168,7 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     cout << "|    Cadastrar Medicamento     |" << endl;
     cout << "+------------------------------+" << endl;
     
-    cout << "Codigo de Identificacao: ";
+    cout << "Codigo de Identificação: ";
     cin >> code;
     cin.clear();
 
@@ -188,31 +187,14 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
         cout << "Aumento realizado!" << endl;
         cout << "Novo tamanho de estoque: " << size << endl;
     }
-<<<<<<< HEAD
-=======
-
-    //REMOVE AFTER TESTS
-    //-----------------------
-    //strcpy(meds[index].code, code);
-    //nMeds++;
-    //return 0;
-    //-----------------------
->>>>>>> 4a8e8bc1687f2b757271f630fc34e783b029dfb0
     
     cin.ignore();
     cout << "Nome do Medicamento: ";
-<<<<<<< HEAD
     cin.getline(meds[index].name, 100);
     cin.clear();
     cout << "Descricao do Medicamento: ";
     cin.getline(meds[index].description, 1000);
     cin.clear();
-=======
-    cin >> meds[index].name;
-    cin.ignore();
-    cout << "Descricao do Medicamento: ";
-    cin.getline(meds[index].description, 1000);
->>>>>>> 4a8e8bc1687f2b757271f630fc34e783b029dfb0
 
     strcpy(meds[index].code, code);
 
@@ -325,7 +307,6 @@ void delMedicamento(Medicamento* &meds, int nMeds){
             cout << "Confimar Exclusao ? ([S]im/[N]ao): ";
             cin >> conf;
 
-<<<<<<< HEAD
             //switch style menu for the exclusion confirmation
             bool sent = true;
             while(sent){
@@ -350,27 +331,6 @@ void delMedicamento(Medicamento* &meds, int nMeds){
         else{
             cout << "Medicamento ja esta inativo no estoque!" << endl;
         }
-=======
-        //switch style menu for the exclusion confirmation
-        bool sent = true;
-        
-        switch (tolower(conf))
-        {
-        case 's':
-            meds[index].status = false;
-            cout << "Exclusao realizada com sucesso!" << endl;
-            break;
-        case 'n':
-            cout << "Exclusao Cancelada!" << endl;
-            sent = false;
-            break;
-        
-        default:
-            cout << "Opcao Invalida!" << endl;
-            break;
-        }
-        
->>>>>>> 4a8e8bc1687f2b757271f630fc34e783b029dfb0
     }
     else{
         cout << "ERR0! Medciamento Nao Encontrado!" << endl;
@@ -391,7 +351,6 @@ int sellMedicamento(Medicamento* &meds, int nMeds){
 
     mergeSort(meds, 0, nMeds-1);
     index = binSearch(meds, nMeds-1, code);
-
     
     if(index <= 0){
         //Checking if it's avaliable on stock
@@ -399,8 +358,8 @@ int sellMedicamento(Medicamento* &meds, int nMeds){
             cout << "Descricao do Medicamento: " << meds[index].description << endl;
             meds[index].stock--;
             meds[index].selled++;
-            cout << "Estoque restante: " << meds[index].stock;
-            cout << "Quantidade Vendida: " << meds[index].selled;
+            cout << "Estoque restante: " << meds[index].stock << endl;
+            cout << "Quantidade Vendida: " << meds[index].selled << endl;
             //Setting med as unavaliable if stock size = 0
             if(meds[index].stock == 0){
                 meds[index].status = false;
@@ -424,19 +383,21 @@ void listStock(Medicamento* meds, int nMeds){
 
     cout << "+-----------------------------------------+" << endl;
     for(int i=0; i<nMeds; i++){
-        cout << "Nome do Medicamento: " << meds[i].name << endl;
-        cout << "Descricao do Medicamento: " << meds[i].description<< endl;
-        cout << "Laboratorio de Origem: " << meds[i].lab << endl;
-        cout << "Codigo de Identificacao: " << meds[i].code << endl;
-        cout << "Qtd. Disponivel: " << meds[i].stock << endl;
-        cout << "Preco da Unidade: " << meds[i].price << endl;
         if(meds[i].status){
-            cout << "Situacao: Ativo" << endl;
+            cout << "Nome do Medicamento: " << meds[i].name << endl;
+            cout << "Descricao do Medicamento: " << meds[i].description<< endl;
+            cout << "Laboratorio de Origem: " << meds[i].lab << endl;
+            cout << "Codigo de Identificacao: " << meds[i].code << endl;
+            cout << "Qtd. Disponivel: " << meds[i].stock << endl;
+            cout << "Preco da Unidade: " << meds[i].price << endl;
+            if(meds[i].status){
+                cout << "Situacao: Ativo" << endl;
+            }
+            else{
+                cout << "Situacao: Inativo" << endl;
+            }
+            cout << "+-----------------------------------------+" << endl << endl;
         }
-        else{
-            cout << "Situacao: Inativo" << endl;
-        }
-        cout << "+-----------------------------------------+" << endl << endl;
     }
 }
 
