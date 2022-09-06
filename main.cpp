@@ -3,6 +3,7 @@
 #include <cstring>
 #include <cctype>
 #include <cmath>
+#include <string.h>
 
 using namespace std;
 
@@ -168,7 +169,7 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     cout << "|    Cadastrar Medicamento     |" << endl;
     cout << "+------------------------------+" << endl;
     
-    cout << "Codigo de Identificação: ";
+    cout << "Codigo de Identificacao: ";
     cin >> code;
 
     //Checking if it's already registered
@@ -189,15 +190,16 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
 
     //REMOVE AFTER TESTS
     //-----------------------
-    strcpy(meds[index].code, code);
-    nMeds++;
-    return 0;
+    //strcpy(meds[index].code, code);
+    //nMeds++;
+    //return 0;
     //-----------------------
     
     cout << "Nome do Medicamento: ";
     cin >> meds[index].name;
+    cin.ignore();
     cout << "Descricao do Medicamento: ";
-    cin >> meds[index].description;
+    cin.getline(meds[index].description, 1000);
 
     strcpy(meds[index].code, code);
 
@@ -308,23 +310,23 @@ void delMedicamento(Medicamento* &meds, int nMeds){
 
         //switch style menu for the exclusion confirmation
         bool sent = true;
-        while(sent){
-            switch (tolower(conf))
-            {
-            case 'y':
-                meds[index].status = false;
-                cout << "Exclusao realizada com sucesso!" << endl;
-                break;
-            case 'n':
-                cout << "Exclusao Cancelada!" << endl;
-                sent = false;
-                break;
-            
-            default:
-                cout << "Opcao Invalida!" << endl;
-                break;
-            }
+        
+        switch (tolower(conf))
+        {
+        case 's':
+            meds[index].status = false;
+            cout << "Exclusao realizada com sucesso!" << endl;
+            break;
+        case 'n':
+            cout << "Exclusao Cancelada!" << endl;
+            sent = false;
+            break;
+        
+        default:
+            cout << "Opcao Invalida!" << endl;
+            break;
         }
+        
     }
     else{
         cout << "ERR0! Medciamento Nao Encontrado!" << endl;
