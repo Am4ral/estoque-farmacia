@@ -144,7 +144,7 @@ int binSearch(Medicamento* meds, int end, char* searchValue){
 void increaseArr(Medicamento* &meds, int& size, int& nMeds){
     //Setting the new size
     //Test wise -- change back to 3 after debbug is done
-    size += 2;
+    size += 3;
 
 
     auto *biggerMeds = new Medicamento[size];
@@ -170,6 +170,7 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     
     cout << "Codigo de Identificação: ";
     cin >> code;
+    cin.clear();
 
     //Checking if it's already registered
     for(int i=0; i<nMeds;i++){
@@ -186,23 +187,20 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
         cout << "Aumento realizado!" << endl;
         cout << "Novo tamanho de estoque: " << size << endl;
     }
-
-    //REMOVE AFTER TESTS
-    //-----------------------
-    strcpy(meds[index].code, code);
-    nMeds++;
-    return 0;
-    //-----------------------
     
+    cin.ignore();
     cout << "Nome do Medicamento: ";
-    cin >> meds[index].name;
+    cin.getline(meds[index].name, 100);
+    cin.clear();
     cout << "Descricao do Medicamento: ";
-    cin >> meds[index].description;
+    cin.getline(meds[index].description, 1000);
+    cin.clear();
 
     strcpy(meds[index].code, code);
 
     cout << "Laboratorio de Origem: ";
-    cin >> meds[index].lab;
+    cin.getline(meds[index].lab, 50);
+    cin.clear();
     cout << "Qtd. Disponivel: ";
     cin >> meds[index].stock;
     cout << "Preco da Unidade: ";
@@ -210,7 +208,8 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     cout << "Situacao: ";
     string stts;
     cin >> stts;
-    if(stts == "Ativo"){
+    //tolower() ?
+    if(stts == "Ativo" or stts == "ativo"){
         meds[index].status = true;
     }
     else{
@@ -219,7 +218,6 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
 
     nMeds++;
 
-    //sorting by code, default mode
     mergeSort(meds, 0, nMeds-1);
 
     return 0;
@@ -267,8 +265,9 @@ void listAllMeds(Medicamento* &meds, int size, int nMeds){
     cout << "+---------------------------------------+" << endl;
 
     //sorting by name, mode = 1
-    mergeSort(meds, 0, nMeds-1, 0);
-    
+    mergeSort(meds, 0, nMeds-1, 1);
+
+    cout << "+-----------------------------------------+" << endl;
     for(index=0; index<nMeds; index++){
         cout << "Nome do Medicamento: " << meds[index].name << endl;
         cout << "Descricao do Medicamento: " << meds[index].description << endl;
@@ -282,6 +281,7 @@ void listAllMeds(Medicamento* &meds, int size, int nMeds){
         else{
             cout << "Situacao: Inativo" << endl;
         }
+        cout << "+-----------------------------------------+" << endl;
     }
     
 }
@@ -302,33 +302,40 @@ void delMedicamento(Medicamento* &meds, int nMeds){
     index =  binSearch(meds, nMeds-1, code);
 
     if(index >= 0){
-        cout << "Descricao do Medicamento: " << meds[index].description << endl;
-        cout << "Confimar Exclusao ? ([S]im/[N]ao): ";
-        cin >> conf;
+        if(meds[index].status){
+            cout << "Descricao do Medicamento: " << meds[index].description << endl;
+            cout << "Confimar Exclusao ? ([S]im/[N]ao): ";
+            cin >> conf;
 
-        //switch style menu for the exclusion confirmation
-        bool sent = true;
-        while(sent){
-            switch (tolower(conf))
-            {
-            case 'y':
-                meds[index].status = false;
-                cout << "Exclusao realizada com sucesso!" << endl;
-                break;
-            case 'n':
-                cout << "Exclusao Cancelada!" << endl;
-                sent = false;
-                break;
-            
-            default:
-                cout << "Opcao Invalida!" << endl;
-                break;
+            //switch style menu for the exclusion confirmation
+            bool sent = true;
+            while(sent){
+                switch (tolower(conf))
+                {
+                case 's':
+                    meds[index].status = false;
+                    cout << "Exclusao realizada com sucesso!" << endl;
+                    sent = false;
+                    break;
+                case 'n':
+                    cout << "Exclusao Cancelada!" << endl;
+                    sent = false;
+                    break;
+                
+                default:
+                    cout << "Opcao Invalida!" << endl;
+                    break;
+                }
             }
+        }
+        else{
+            cout << "Medicamento ja esta inativo no estoque!" << endl;
         }
     }
     else{
         cout << "ERR0! Medciamento Nao Encontrado!" << endl;
     }
+        
 }
 
 int sellMedicamento(Medicamento* &meds, int nMeds){
@@ -375,8 +382,8 @@ void listStock(Medicamento* meds, int nMeds){
     cout << "|    Listar Medicamentos em Estoque    |" << endl;
     cout << "+--------------------------------------+" << endl;
 
+    cout << "+-----------------------------------------+" << endl;
     for(int i=0; i<nMeds; i++){
-        cout << "+-----------------------------------------+" << endl;
         cout << "Nome do Medicamento: " << meds[i].name << endl;
         cout << "Descricao do Medicamento: " << meds[i].description<< endl;
         cout << "Laboratorio de Origem: " << meds[i].lab << endl;
@@ -405,11 +412,10 @@ void saveToFile(Medicamento* meds, int nMeds){
     cout << "Dados Salvos!" << endl;
 }
 
-
 int main(){
     bool menu = true;
     int menuOpt;
-    int size = 2, nMeds = 0;
+    int size = 3, nMeds = 0;
     auto* meds = new Medicamento[size];
     //Medicamento* meds = (Medicamento*) malloc(sizeof(Medicamento)*size);
 
