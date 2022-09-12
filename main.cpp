@@ -126,7 +126,6 @@ int binSearch(Medicamento* meds, int end, char* searchValue){
         mid = floor((init+end)/2);
         if(strcmp(searchValue, meds[mid].code) == 0){
             return mid;
-            init = end+1;
         }
         else{
             if(strcmp(searchValue,meds[mid].code) > 0){
@@ -143,7 +142,6 @@ int binSearch(Medicamento* meds, int end, char* searchValue){
 //Resizing the Medicamento array to support more entries
 void increaseArr(Medicamento* &meds, int& size, int& nMeds){
     //Setting the new size
-    //Test wise -- change back to 3 after debbug is done
     size += 3;
 
 
@@ -154,8 +152,6 @@ void increaseArr(Medicamento* &meds, int& size, int& nMeds){
     delete[] meds;
 
     meds = biggerMeds;
-
-    //meds = (Medicamento*)realloc(meds, sizeof(Medicamento)*size);   
 }
 
 int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
@@ -208,7 +204,7 @@ int cadMedicamento(Medicamento* &meds, int& size, int& nMeds){
     cout << "Situacao: ";
     string stts;
     cin >> stts;
-    //tolower() ?
+    
     if(stts == "Ativo" or stts == "ativo"){
         meds[index].status = true;
     }
@@ -241,7 +237,6 @@ void consultMedicamentos(Medicamento* &meds, int nMeds){
         cout << "Nome do Medicamento: " << meds[index].name << endl;
         cout << "Descricao do Medicamento: " << meds[index].description << endl;
         cout << "Laboratorio de Origem: " << meds[index].lab << endl;
-        cout << "Codigo de Identificacao: " << meds[index].code << endl;
         cout << "Qtd. Disponivel: " << meds[index].stock << endl;
         cout << "Preco da Unidade: " << meds[index].price << endl;
         if(meds[index].status){
@@ -352,9 +347,9 @@ int sellMedicamento(Medicamento* &meds, int nMeds){
     mergeSort(meds, 0, nMeds-1);
     index = binSearch(meds, nMeds-1, code);
     
-    if(index <= 0){
+    if(index >= 0){
         //Checking if it's avaliable on stock
-        if(meds[index].status){
+        if(meds[index].status and meds[index].stock > 0){
             cout << "Descricao do Medicamento: " << meds[index].description << endl;
             meds[index].stock--;
             meds[index].selled++;
@@ -404,11 +399,22 @@ void listStock(Medicamento* meds, int nMeds){
 void saveToFile(Medicamento* meds, int nMeds){
     clear_terminal();
     ofstream file("saida");
+
+    int cont=0;
     cout << "+------------------------------+" << endl;
     cout << "|      Salvar em Arquivo       |" << endl;
     cout << "+------------------------------+" << endl;
 
-    file.write((const char*)(meds), nMeds*sizeof(Medicamento));
+    auto aux = new Medicamento[nMeds];
+
+    for(int i=0; i<nMeds; i++){
+        if(meds[i].status){
+            aux[i] = meds[i];
+            cont++;
+        }
+    }
+
+    file.write((const char*)(aux), cont*sizeof(Medicamento));
 
     cout << "Dados Salvos!" << endl;
 }
@@ -418,7 +424,6 @@ int main(){
     int menuOpt;
     int size = 3, nMeds = 0;
     auto* meds = new Medicamento[size];
-    //Medicamento* meds = (Medicamento*) malloc(sizeof(Medicamento)*size);
 
     while(menu){
         printMenu();
@@ -456,7 +461,7 @@ int main(){
                 saveToFile(meds, nMeds);
                 break;
             case 8: 
-                cout << "Ecerrando programa!" << endl;
+                cout << "Ecerrando 0 programa!" << endl;
                 cout << "Bye........" << endl;
                 menu = false;
                 break;
